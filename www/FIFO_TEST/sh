@@ -1,0 +1,20 @@
+#!/bin/bash
+sudo rm -rf /var/www/cgi-bin/*.cgi
+sudo rm -rf /var/www/*.html
+sudo rm -rf /var/www/*.js
+sudo rm -rf /var/www/jquery
+cd cgi-bin
+sudo make clean
+sudo make
+sudo cp -rf ../*.ico /var/www
+sudo chmod 777 /var/www/*.ico
+sudo cp -rf ../*.html /var/www
+sudo chmod 777 /var/www/*.html
+sudo cp -rf ../*.js /var/www
+sudo chmod 777 /var/www/*.js
+sudo cp -rf ../jquery /var/www
+sudo chmod 777 /var/www/jquery
+sudo cp -rf ./*.cgi /var/www/cgi-bin
+sudo chmod 777 /var/www/cgi-bin/*.cgi
+
+

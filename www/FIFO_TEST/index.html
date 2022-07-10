@@ -1,0 +1,172 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>超声波压力</title>
+<style>
+	.body-style{
+		font-size:24px;
+		text-align:center;
+	}
+	
+	.body-style input{
+		font-size:20px;
+		text-align:center;
+		color:#0000FF;
+	}
+	
+	.body-style button{
+		font-size:24px;
+		text-align:center;
+		border:1px solid white;
+		height:50px;
+		background-color: green;
+		color:#FFFFFF;
+	}
+	
+	.body-style button:hover{
+		color:yellow;
+	}
+	
+	.div-style{
+		margin:10px 20% 10px 20%;
+		border-radius: 5px;
+		border:1px solid #cccccc;
+		height:50px;
+		padding-top:15px;
+		padding-bottom:10px;
+	}
+</style>
+</head>
+<body class="body-style">
+	<div class="div-style">
+		<span>HTTP请求地址：</span><input id="url" placeholder="HTTP请求地址" value="192.168.0.19"/>
+		<span style="margin-left:20px">请求端口：</span><input id="port" placeholder="请求端口" value="8080"/>
+		<span id="error-message" style="color:#FF0000"></span>
+	</div>
+	<div class="div-style">
+		<span>压力值(N)：</span><input id="power" placeholder="压力" readonly="readonly"/>
+		<button id="beginBtn" onclick="beginQuery()">获取</button>
+		<button id="stopBtn" onclick="stopQuery()" style="display:none">停止</button>
+	</div>
+	<div class="div-style">
+		<button onclick="ultrasonic()">超声波</button>
+		<span id="state-message" style="color:#0000FF">设备运行中...</span>
+		<button id="stop-reset" onclick="stop()" style="margin-left:30px">急停/复位</button>
+	</div>
+	
+</body>
+<script type="text/javascript" src="./jquery/jquery-1.9.0.min.js"></script>
+<!--<script type="text/javascript" src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>-->
+<script type="text/javascript">
+	//window.setInterval(function(){ refresh() }, 500); //500ms刷新一次
+	var w;
+	var urls = document.getElementById("url").value;
+	var port = document.getElementById("port").value;
+	var url = "http://" + urls + ":" + port;
+	var a = 0;
+	
+	function beginQuery(){
+		if(checkURL() == false){
+			return;
+		}
+		
+		if(typeof(Worker) !== "undefined") {
+			if(typeof(w) == "undefined") {
+				//w = new Worker("http://localhost:8280/4/refresh2.js");
+				w = new Worker(url + "/refresh.js");
+				
+				document.getElementById("beginBtn").style.display="none";
+				document.getElementById("stopBtn").style.display="inline";
+			}
+			
+			w.onmessage = function(event) {
+				document.getElementById("power").value = event.data;
+				//console.log("event.data:"+event.data);
+			};
+		}else {
+			document.getElementById("error-message").innerHTML = "抱歉，你的浏览器不支持 Web Workers...";
+		}
+	}
+	
+	function stopQuery(){
+		w.terminate();
+		w = undefined;
+		
+		document.getElementById("beginBtn").style.display="inline";
+		document.getElementById("stopBtn").style.display="none";
+	}
+			
+	function ultrasonic(){
+		console.log("a:"+a);
+		a++;
+		if(checkURL()){
+	 		httpGet("/cgi-bin/ultrasound-get.cgi", 1);
+		}
+	}
+	 
+	function stop(){
+		if(checkURL()){
+	 		httpGet("/cgi-bin/reset.cgi", 2);
+		}
+	}
+	
+	function refresh(){	
+		if(checkURL()){
+			httpGet("/cgi-bin/pressure-get.cgi", 3);
+		}
+	}
+	
+	
+	function checkURL(){
+		urls = document.getElementById("url").value;
+		port = document.getElementById("port").value;
+	
+		document.getElementById("error-message").innerText = "";	
+		if( urls == null || urls == ""){
+			document.getElementById("error-message").innerText = "HTTP请求地址不能为空";
+			return false;
+		}
+		
+		if( port == null || port == ""){
+			document.getElementById("error-message").innerText = "请求端口不能为空";
+			return false;
+		}
+		
+		url = "http://" + urls + ":" + port;
+		return true;
+	}
+	
+	function httpGet(interface, type){	
+		var urlStr = url + interface;
+		
+		$.ajax({
+			type: "GET",
+			url: urlStr,
+			cache :false,
+			jsonp: "callback",
+        	jsonpCallback:"success",
+			dataType:"jsonp",
+			success: function(data) {
+				if(type == 1){
+					document.getElementById("state-message").innerText = data;
+					console.log("data:"+data);
+				}else if(type == 2){
+					if(data == 0){
+						document.getElementById("stop-reset").innerText = "急停";
+						document.getElementById("stop-reset").style.backgroundColor = "red";
+					}else{
+						document.getElementById("stop-reset").innerText = "复位";
+						document.getElementById("stop-reset").style.backgroundColor = "green";
+					}
+				}else if(type == 3){
+					document.getElementById("power").value = data;
+				}
+			},
+			error:function(data){
+            	console.log("error:"+data);
+        	}        
+		});
+	}	
+</script>
+</html>

@@ -1,0 +1,8 @@
+sudo rm -r ./.git
+git config --global --replace-all user.email "764889950@qq.com"
+git config --global --replace-all user.name "764889950@qq.com"
+git init
+git remote add origin git@github.com:764889950/USR.git
+git add .
+git commit -m "init"
+git push -u origin master -f
