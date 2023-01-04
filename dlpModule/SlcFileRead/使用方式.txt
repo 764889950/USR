@@ -1,0 +1,12 @@
+﻿
+关于编译，在当前目录下执行 make
+关于执行，在当前目录下执行 ./SLC_Read help，需要强调的是SLC_Read需要通过root权限运行
+
+要求:安装编译工具链（如环境有则不需要再安装）
+
+
+本工程预留有websocket，cjson模块；使用websocket时，其端口只能使用一次,故使用websocket时，不建议程序退出
+
+
+FlieSlc文件夹为slc文件例子
+www文件夹为CGI程序，供外部ApiPost调用,与SLC_Read进程通信

@@ -1,0 +1,10 @@
+#!/bin/bash
+sudo rm -rf /var/www/cgi-bin/*.cgi
+sudo rm -rf /var/www/*.html
+cd cgi-bin
+sudo make clean
+sudo make
+sudo cp -rf ./*.cgi /var/www/cgi-bin
+sudo chmod 777 /var/www/cgi-bin/*.cgi
+
+

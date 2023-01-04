@@ -1,0 +1,24 @@
+# 服务进程的PID
+#pid_file /var/run/mosquitto.pid
+ 
+# 服务进程的系统用户
+#user mosquitto
+ 
+# 服务绑定的IP地址
+#bind_address
+ 
+# 服务绑定的端口号
+#port 1883
+ 
+# 允许的最大连接数，-1表示没有限制
+#max_connections -1
+ 
+# 允许匿名用户
+#allow_anonymous true
+
+
+启动指定配置的服务
+mosquitto -c mosquitto-config/myconfig.conf
+
+对应的发布命令
+mosquitto_pub -t 'test/topic' -m 'hello world' -u "jhon" -P "123456" -h "192.168.10.139"

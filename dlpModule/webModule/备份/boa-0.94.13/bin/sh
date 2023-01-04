@@ -1,0 +1,6 @@
+#!/bin/bash
+cd ../src
+sudo ./configure && sudo make
+sudo cp -rf ./boa ../bin
+sudo cp -rf ./boa_indexer ../bin
+sudo cp -rf ../boa.conf ../bin

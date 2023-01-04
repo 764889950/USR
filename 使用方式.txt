@@ -1,0 +1,6 @@
+﻿
+关于编译，在当前目录下执行 make
+关于执行，在当前目录下执行 ./auto
+
+独立模块：dlpModule      libcrc-master->examples(modbus)      CGI程序
+独立用户组：00.dlpUsr1    01.autoFdm      02.assistLdm       

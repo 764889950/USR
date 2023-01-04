@@ -1,0 +1,96 @@
+进入到bin目录下执行sh文件，即在bin目录中的终端中输入 “./sh”
+注：“使用说明.txt”文件位于/home/jhon/share/boa-0.94.13下,sh文件位于/home/jhon/share/boa-0.94.13/bin下；
+
+
+1、修改 src/compat.h：
+找到
+#define TIMEZONE_OFFSET(foo) foo##->tm_gmtoff
+
+修改成
+
+#define TIMEZONE_OFFSET(foo) (foo)->tm_gmtoff
+
+
+2、修改 src/log.c：
+注释掉
+
+if (dup2(error_log, STDERR_FILENO) == -1) {
+
+	DIE("unable to dup2 the error log");
+}
+
+为：
+
+/*if (dup2(error_log, STDERR_FILENO) == -1) {
+
+	DIE("unable to dup2 the error log");
+}*/
+
+
+3、修改src/boa.c：
+if (passwdbuf == NULL) {
+
+	DIE(”getpwuid”);
+}
+
+if (initgroups(passwdbuf->pw_name, passwdbuf->pw_gid) == -1) 
+{
+
+	DIE(”initgroups”);
+}
+
+
+为
+
+
+#if 0
+
+if (passwdbuf == NULL) {
+
+	DIE(”getpwuid”);
+}
+
+if (initgroups(passwdbuf->pw_name, passwdbuf->pw_gid) == -1) {
+
+	DIE(”initgroups”);
+
+}
+
+#endif
+
+4、修改src/defines.h
+
+将 #define SERVER_ROOT "/home/jhon/share/boa-0.94.13/bin"
+
+
+
+当前目录下boa.conf文件修改内容如下:
+重新指定一些文件的生成路径，因为重新指定这些路径后会帮助我们深刻的理解关于boa服务器的工作机制
+Port 8080 
+User 0  
+Group 0
+
+##### error_log和access_log会自动生成，只要指定生成路径就可以了。
+ErrorLog /home/jhon/share/boa-0.94.13/bin/error_log   #被修改
+AccessLog /home/jhon/share/boa-0.94.13/bin/access_log #被修改
+
+##### 存放HTML文件的根路径 
+DocumentRoot /var/www
+
+##### 默认页面，若输入http://127.0.0.1/则会自动返回给浏览器默认页面index.html  
+DirectoryIndex index.html        #默认
+
+DirectoryMaker /home/jhon/share/boa-0.94.13/bin  #被修改
+
+
+MimeTypes /etc/mime.types        #默认
+
+
+#####如果输入http://127.0.0.1/cgi-bin/test.cgi, 则boa服务器会到/boa/cgi-bin中寻找test.cgi程序。
+ScriptAlias /cgi-bin/ /boa/cgi-bin/
+
+
+
+
+
+参考：https://blog.csdn.net/weixin_39148042/article/details/81221965
